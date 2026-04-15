@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tau Empire — Legerbeheer</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Exo+2:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e14;
+    --surface: #111620;
+    --surface2: #161d2a;
+    --surface3: #1c2535;
+    --border: #1e3050;
+    --border2: #2a4470;
+    --tau-blue: #00b4d8;
+    --tau-blue2: #0077a8;
+    --tau-teal: #00f5c4;
+    --tau-gold: #f0a500;
+    --tau-red: #e84855;
+    --text: #e8edf5;
+    --text2: #8a9bb8;
+    --text3: #4a5872;
+    --accent: #00f5c4;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Exo 2', sans-serif;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0,180,216,0.08) 0%, transparent 60%),
+      repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(30,48,80,0.3) 39px, rgba(30,48,80,0.3) 40px),
+      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(30,48,80,0.3) 39px, rgba(30,48,80,0.3) 40px);
+  }
+
+  /* NAV */
+  nav {
+    background: rgba(10,14,20,0.95);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(12px);
+  }
+  .nav-logo {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--tau-teal);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .nav-logo::before {
+    content: '';
+    width: 28px; height: 28px;
+    background: conic-gradient(from 0deg, var(--tau-teal), var(--tau-blue), var(--tau-teal));
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    display: block;
+    animation: spin 8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .nav-stats {
+    display: flex;
+    gap: 24px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: var(--text2);
+  }
+  .nav-stat span { color: var(--tau-teal); font-weight: 600; }
+
+  /* HEADER */
+  .hero {
+    padding: 3rem 2rem 2rem;
+    text-align: center;
+    position: relative;
+  }
+  .hero h1 {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 700;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    background: linear-gradient(135deg, var(--tau-teal) 0%, var(--tau-blue) 50%, #fff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 6px;
+  }
+  .hero p {
+    font-size: 13px;
+    color: var(--text3);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    font-family: 'Share Tech Mono', monospace;
+  }
+  .hero-line {
+    width: 200px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--tau-teal), transparent);
+    margin: 1rem auto;
+  }
+
+  /* CONTROLS */
+  .controls {
+    max-width: 1400px;
+    margin: 0 auto 1.5rem;
+    padding: 0 2rem;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .search-wrap {
+    flex: 1;
+    min-width: 200px;
+    position: relative;
+  }
+  .search-wrap input {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    padding: 9px 12px 9px 36px;
+    font-size: 13px;
+    font-family: 'Exo 2', sans-serif;
+    transition: border-color 0.2s;
+    outline: none;
+  }
+  .search-wrap input:focus { border-color: var(--tau-blue); }
+  .search-wrap::before {
+    content: '⌕';
+    position: absolute;
+    left: 12px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--text3);
+    font-size: 16px;
+    pointer-events: none;
+  }
+  select {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    padding: 9px 12px;
+    font-size: 13px;
+    font-family: 'Exo 2', sans-serif;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  select:focus { border-color: var(--tau-blue); }
+  select option { background: var(--surface2); }
+
+  .btn {
+    padding: 9px 18px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text2);
+    transition: all 0.2s;
+  }
+  .btn:hover { border-color: var(--tau-blue); color: var(--tau-blue); background: rgba(0,180,216,0.06); }
+  .btn-primary {
+    background: rgba(0,245,196,0.1);
+    border-color: var(--tau-teal);
+    color: var(--tau-teal);
+  }
+  .btn-primary:hover {
+    background: rgba(0,245,196,0.2);
+    box-shadow: 0 0 16px rgba(0,245,196,0.2);
+  }
+
+  /* GRID */
+  .grid {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem 4rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+  }
+
+  /* CARD */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    position: relative;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--role-color, var(--tau-blue)), transparent);
+  }
+  .card:hover {
+    transform: translateY(-2px);
+    border-color: var(--border2);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(0,180,216,0.1);
+  }
+
+  .card-img {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+    display: block;
+    background: var(--surface2);
+    position: relative;
+  }
+  .card-img-placeholder {
+    width: 100%;
+    height: 140px;
+    background: var(--surface2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 40px;
+    color: var(--border2);
+    letter-spacing: 2px;
+    border-bottom: 1px solid var(--border);
+  }
+  .card-img-wrap { position: relative; }
+  .card-img-wrap img { width: 100%; height: 140px; object-fit: cover; border-bottom: 1px solid var(--border); display: block; }
+
+  .card-body { padding: 14px 16px 12px; }
+
+  .card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    gap: 8px;
+  }
+  .card-name {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    line-height: 1.2;
+    color: var(--text);
+  }
+  .role-badge {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 3px;
+    white-space: nowrap;
+    letter-spacing: 1px;
+    flex-shrink: 0;
+  }
+
+  /* STATS ROW */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 4px;
+    margin-bottom: 10px;
+  }
+  .stat-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 5px 2px 4px;
+    text-align: center;
+  }
+  .stat-val {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--tau-teal);
+    line-height: 1;
+  }
+  .stat-lbl {
+    font-size: 9px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+  }
+
+  /* HEALTH BAR */
+  .health-row { margin-bottom: 10px; }
+  .health-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+    font-family: 'Share Tech Mono', monospace;
+  }
+  .health-bar {
+    height: 5px;
+    background: var(--surface3);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .health-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: linear-gradient(90deg, var(--tau-teal), var(--tau-blue));
+  }
+
+  /* WEAPONS */
+  .section-label {
+    font-size: 10px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-family: 'Share Tech Mono', monospace;
+    margin-bottom: 5px;
+  }
+  .weapons-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 10px;
+  }
+  .weapon-tag {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 3px;
+    background: rgba(0,119,168,0.15);
+    border: 1px solid rgba(0,119,168,0.35);
+    color: #6ec6e8;
+    font-family: 'Share Tech Mono', monospace;
+  }
+
+  /* ABILITIES */
+  .abilities-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 10px;
+  }
+  .ability-tag {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 3px;
+    background: rgba(240,165,0,0.1);
+    border: 1px solid rgba(240,165,0,0.3);
+    color: #e8c06a;
+    font-family: 'Exo 2', sans-serif;
+  }
+
+  /* FACTION KEYWORDS */
+  .keywords-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 10px;
+  }
+  .keyword-tag {
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 3px;
+    background: rgba(0,245,196,0.07);
+    border: 1px solid rgba(0,245,196,0.2);
+    color: var(--tau-teal);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-family: 'Share Tech Mono', monospace;
+  }
+
+  .card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+    margin-top: 2px;
+  }
+  .pts-display {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--tau-gold);
+  }
+  .pts-display small {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--text3);
+    margin-left: 2px;
+  }
+  .card-actions { display: flex; gap: 6px; }
+  .icon-btn {
+    width: 28px; height: 28px;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    background: transparent;
+    color: var(--text3);
+    cursor: pointer;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+  }
+  .icon-btn:hover { border-color: var(--tau-blue); color: var(--tau-blue); background: rgba(0,180,216,0.08); }
+  .icon-btn.del:hover { border-color: var(--tau-red); color: var(--tau-red); background: rgba(232,72,85,0.08); }
+
+  /* ROLE COLORS */
+  .role-hq { background: rgba(240,165,0,0.12); border-color: rgba(240,165,0,0.35); color: #e8c06a; }
+  .role-troops { background: rgba(0,180,216,0.12); border-color: rgba(0,180,216,0.35); color: #6ec6e8; }
+  .role-elite { background: rgba(168,85,247,0.12); border-color: rgba(168,85,247,0.35); color: #c084fc; }
+  .role-fast { background: rgba(34,197,94,0.12); border-color: rgba(34,197,94,0.35); color: #86efac; }
+  .role-heavy { background: rgba(232,72,85,0.12); border-color: rgba(232,72,85,0.35); color: #f87171; }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(5,8,14,0.85);
+    z-index: 200;
+    backdrop-filter: blur(4px);
+    overflow-y: auto;
+    padding: 2rem 1rem;
+  }
+  .modal-overlay.open { display: flex; align-items: flex-start; justify-content: center; }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 12px;
+    padding: 2rem;
+    width: 100%;
+    max-width: 600px;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,245,196,0.05);
+    position: relative;
+  }
+  .modal::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 40px; right: 40px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--tau-teal), transparent);
+  }
+  .modal h2 {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--tau-teal);
+    margin-bottom: 1.5rem;
+  }
+  .form-section {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text3);
+    font-family: 'Share Tech Mono', monospace;
+    margin: 1.25rem 0 0.75rem;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  .form-row { margin-bottom: 12px; }
+  .form-row label {
+    display: block;
+    font-size: 11px;
+    color: var(--text2);
+    margin-bottom: 5px;
+    letter-spacing: 0.5px;
+    font-family: 'Share Tech Mono', monospace;
+  }
+  .form-row input, .form-row select, .form-row textarea {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    padding: 8px 11px;
+    font-size: 13px;
+    font-family: 'Exo 2', sans-serif;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .form-row input:focus, .form-row select:focus, .form-row textarea:focus { border-color: var(--tau-blue); }
+  .form-row textarea { height: 72px; resize: vertical; }
+  .form-row select option { background: var(--surface2); }
+
+  /* Image upload */
+  .img-upload {
+    border: 2px dashed var(--border2);
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    background: var(--surface2);
+  }
+  .img-upload:hover { border-color: var(--tau-teal); background: rgba(0,245,196,0.03); }
+  .img-upload p { font-size: 12px; color: var(--text3); margin-top: 6px; }
+  #img-preview {
+    max-width: 100%;
+    max-height: 150px;
+    border-radius: 6px;
+    display: none;
+    margin: 8px auto 0;
+  }
+  #img-input { display: none; }
+
+  .modal-footer {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+  }
+
+  /* EMPTY */
+  .empty {
+    grid-column: 1/-1;
+    padding: 4rem;
+    text-align: center;
+    color: var(--text3);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 2px;
+  }
+
+  /* SUMMARY BAR */
+  .summary-bar {
+    max-width: 1400px;
+    margin: 0 auto 1.5rem;
+    padding: 0 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 10px;
+  }
+  .sum-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+  }
+  .sum-val {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--tau-teal);
+  }
+  .sum-lbl {
+    font-size: 10px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-family: 'Share Tech Mono', monospace;
+    margin-top: 1px;
+  }
+
+  /* OC badge in card */
+  .oc-badge {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--text3);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .oc-badge span {
+    background: rgba(0,245,196,0.1);
+    border: 1px solid rgba(0,245,196,0.25);
+    color: var(--tau-teal);
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  @media (max-width: 600px) {
+    .form-grid, .form-grid-3 { grid-template-columns: 1fr; }
+    .stats-row { grid-template-columns: repeat(3, 1fr); }
+    nav .nav-stats { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Tau Empire</div>
+  <div class="nav-stats">
+    <div>UNITS: <span id="nav-units">0</span></div>
+    <div>PUNTEN: <span id="nav-pts">0</span></div>
+    <div>OC TOTAAL: <span id="nav-oc">0</span></div>
+  </div>
+  <button class="btn btn-primary" onclick="openModal()">+ Unit toevoegen</button>
+</nav>
+
+<div class="hero">
+  <h1>Legerbeheer</h1>
+  <div class="hero-line"></div>
+  <p>Tau Empire — For the Greater Good</p>
+</div>
+
+<div class="summary-bar" id="summary-bar"></div>
+
+<div class="controls">
+  <div class="search-wrap">
+    <input type="text" id="search" placeholder="Zoek unit naam..." oninput="render()">
+  </div>
+  <select id="role-filter" onchange="render()">
+    <option value="">Alle rollen</option>
+    <option value="HQ">HQ</option>
+    <option value="Troops">Troops</option>
+    <option value="Elite">Elite</option>
+    <option value="Fast Attack">Fast Attack</option>
+    <option value="Heavy Support">Heavy Support</option>
+  </select>
+  <select id="sort" onchange="render()">
+    <option value="name">Sorteer: naam</option>
+    <option value="pts">Sorteer: punten</option>
+    <option value="oc">Sorteer: OC</option>
+    <option value="role">Sorteer: rol</option>
+  </select>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <h2 id="modal-title">Nieuwe unit toevoegen</h2>
+
+    <div class="form-section">Identiteit</div>
+    <div class="form-grid">
+      <div class="form-row">
+        <label>Naam *</label>
+        <input type="text" id="f-name" placeholder="bijv. Fire Warriors">
+      </div>
+      <div class="form-row">
+        <label>Rol</label>
+        <select id="f-role">
+          <option value="Troops">Troops</option>
+          <option value="HQ">HQ</option>
+          <option value="Elite">Elite</option>
+          <option value="Fast Attack">Fast Attack</option>
+          <option value="Heavy Support">Heavy Support</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-section">Statistieken</div>
+    <div class="form-grid-3">
+      <div class="form-row"><label>Beweging</label><input type="text" id="f-move" placeholder='6"'></div>
+      <div class="form-row"><label>Toughness</label><input type="number" id="f-t" placeholder="3" min="1" max="12"></div>
+      <div class="form-row"><label>Save</label><input type="text" id="f-save" placeholder='4+"'></div>
+      <div class="form-row"><label>Health (W)</label><input type="number" id="f-w" placeholder="1" min="1"></div>
+      <div class="form-row"><label>Leadership</label><input type="number" id="f-ld" placeholder="7" min="1" max="10"></div>
+      <div class="form-row"><label>Objective Control</label><input type="number" id="f-oc" placeholder="2" min="0"></div>
+    </div>
+
+    <div class="form-section">Bewapening & punten</div>
+    <div class="form-row">
+      <label>Wapens & aanvallen (komma-gescheiden)</label>
+      <input type="text" id="f-weapons" placeholder="bijv. Pulse Rifle, Pulse Pistol, Photon Grenade">
+    </div>
+    <div class="form-row">
+      <label>Puntenwaarde</label>
+      <input type="number" id="f-pts" placeholder="bijv. 85" min="0">
+    </div>
+
+    <div class="form-section">Abilities & keywords</div>
+    <div class="form-row">
+      <label>Speciale regels / abilities (komma-gescheiden)</label>
+      <textarea id="f-abilities" placeholder="bijv. For the Greater Good, Bonding Knife Ritual"></textarea>
+    </div>
+    <div class="form-row">
+      <label>Faction keywords (komma-gescheiden)</label>
+      <input type="text" id="f-keywords" placeholder="bijv. T'au Empire, Sept, Infantry">
+    </div>
+
+    <div class="form-section">Afbeelding</div>
+    <div class="form-row">
+      <div class="img-upload" onclick="document.getElementById('img-input').click()">
+        <div style="font-size:24px; color:var(--border2)">⊕</div>
+        <p>Klik om een afbeelding te uploaden</p>
+        <p style="font-size:10px; margin-top:2px">PNG, JPG, WEBP — max 5MB</p>
+        <img id="img-preview" alt="preview">
+      </div>
+      <input type="file" id="img-input" accept="image/*" onchange="previewImg(event)">
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal()">Annuleren</button>
+      <button class="btn btn-primary" onclick="saveUnit()">Opslaan</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const ROLE_CLASS = {
+  HQ: 'role-hq', Troops: 'role-troops', Elite: 'role-elite',
+  'Fast Attack': 'role-fast', 'Heavy Support': 'role-heavy'
+};
+const ROLE_COLOR = {
+  HQ: '#e8c06a', Troops: '#6ec6e8', Elite: '#c084fc',
+  'Fast Attack': '#86efac', 'Heavy Support': '#f87171'
+};
+
+let units = [
+  {id:1,name:'Cadre Fireblade',role:'HQ',pts:55,move:'6"',t:3,save:'4+',w:4,ld:7,oc:1,weapons:['Pulse Rifle','Pulse Pistol'],abilities:['For the Greater Good','Volley Fire'],keywords:["T'au Empire","Aun'Va Sept","Infantry","Character"],img:''},
+  {id:2,name:'Fire Warriors Strike',role:'Troops',pts:85,move:'6"',t:3,save:'4+',w:1,ld:7,oc:2,weapons:['Pulse Rifle','Photon Grenade'],abilities:['For the Greater Good','Bonding Knife Ritual'],keywords:["T'au Empire","Sept","Infantry"],img:''},
+  {id:3,name:'Crisis Battlesuits',role:'Elite',pts:135,move:'8"',t:5,save:'3+',w:3,ld:8,oc:1,weapons:['Burst Cannon','Plasma Rifle','Shield Generator'],abilities:['Jet Pack','Multi-tracker'],keywords:["T'au Empire","Sept","Battlesuit"],img:''},
+  {id:4,name:'Pathfinder Team',role:'Troops',pts:70,move:'7"',t:3,save:'5+',w:1,ld:7,oc:2,weapons:['Pulse Carbine','Markerlight','Ion Rifle'],abilities:['Scouts','Markerlights'],keywords:["T'au Empire","Sept","Infantry"],img:''},
+  {id:5,name:'Broadside Battlesuit',role:'Heavy Support',pts:95,move:'5"',t:5,save:'2+',w:6,ld:8,oc:1,weapons:['Heavy Rail Rifle','Smart Missile System'],abilities:['Stabilized Optics'],keywords:["T'au Empire","Sept","Battlesuit"],img:''},
+  {id:6,name:'Piranha',role:'Fast Attack',pts:55,move:'14"',t:4,save:'4+',w:4,ld:7,oc:0,weapons:['Burst Cannon','Seeker Missile'],abilities:['Flier','Hover Jet'],keywords:["T'au Empire","Sept","Vehicle"],img:''}
+];
+let nextId = 10;
+let editId = null;
+let pendingImg = '';
+
+function render() {
+  const q = document.getElementById('search').value.toLowerCase();
+  const rf = document.getElementById('role-filter').value;
+  const sort = document.getElementById('sort').value;
+
+  let list = units.filter(u => {
+    return (!q || u.name.toLowerCase().includes(q)) && (!rf || u.role === rf);
+  });
+
+  if (sort === 'pts') list.sort((a,b) => b.pts - a.pts);
+  else if (sort === 'oc') list.sort((a,b) => b.oc - a.oc);
+  else if (sort === 'role') list.sort((a,b) => a.role.localeCompare(b.role));
+  else list.sort((a,b) => a.name.localeCompare(b.name));
+
+  const grid = document.getElementById('grid');
+  if (!list.length) {
+    grid.innerHTML = '<div class="empty">// geen units gevonden //</div>';
+    updateSummary(); return;
+  }
+
+  grid.innerHTML = list.map(u => {
+    const rc = ROLE_CLASS[u.role] || 'role-troops';
+    const col = ROLE_COLOR[u.role] || '#6ec6e8';
+    const maxW = Math.max(u.w, 1);
+    const healthPct = 100;
+    return `
+    <div class="card" style="--role-color:${col}">
+      ${u.img
+        ? `<div class="card-img-wrap"><img src="${u.img}" alt="${u.name}" loading="lazy"></div>`
+        : `<div class="card-img-placeholder">${u.name.slice(0,2).toUpperCase()}</div>`
+      }
+      <div class="card-body">
+        <div class="card-top">
+          <div class="card-name">${u.name}</div>
+          <span class="role-badge ${rc}">${u.role}</span>
+        </div>
+
+        <div class="stats-row">
+          <div class="stat-box"><div class="stat-val">${u.move||'—'}</div><div class="stat-lbl">Move</div></div>
+          <div class="stat-box"><div class="stat-val">${u.t||'—'}</div><div class="stat-lbl">T</div></div>
+          <div class="stat-box"><div class="stat-val">${u.save||'—'}</div><div class="stat-lbl">Save</div></div>
+          <div class="stat-box"><div class="stat-val">${u.w||'—'}</div><div class="stat-lbl">W</div></div>
+          <div class="stat-box"><div class="stat-val">${u.ld||'—'}</div><div class="stat-lbl">LD</div></div>
+          <div class="stat-box"><div class="stat-val">${u.oc||0}</div><div class="stat-lbl">OC</div></div>
+        </div>
+
+        <div class="health-row">
+          <div class="health-label"><span>Health</span><span>${u.w} W</span></div>
+          <div class="health-bar"><div class="health-fill" style="width:${healthPct}%"></div></div>
+        </div>
+
+        ${u.weapons.length ? `<div class="section-label">Wapens & aanvallen</div><div class="weapons-list">${u.weapons.map(w=>`<span class="weapon-tag">${w}</span>`).join('')}</div>` : ''}
+        ${u.abilities.length ? `<div class="section-label">Abilities</div><div class="abilities-list">${u.abilities.map(a=>`<span class="ability-tag">${a}</span>`).join('')}</div>` : ''}
+        ${u.keywords.length ? `<div class="section-label">Keywords</div><div class="keywords-list">${u.keywords.map(k=>`<span class="keyword-tag">${k}</span>`).join('')}</div>` : ''}
+
+        <div class="card-footer">
+          <div class="pts-display">${u.pts}<small>pts</small></div>
+          <div class="card-actions">
+            <button class="icon-btn" onclick="editUnit(${u.id})" title="Bewerken">✎</button>
+            <button class="icon-btn del" onclick="deleteUnit(${u.id})" title="Verwijderen">✕</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  updateSummary();
+}
+
+function updateSummary() {
+  const totalPts = units.reduce((s,u) => s + (Number(u.pts)||0), 0);
+  const totalOC = units.reduce((s,u) => s + (Number(u.oc)||0), 0);
+  const roles = [...new Set(units.map(u=>u.role))];
+
+  document.getElementById('nav-units').textContent = units.length;
+  document.getElementById('nav-pts').textContent = totalPts;
+  document.getElementById('nav-oc').textContent = totalOC;
+
+  const roleCount = {};
+  units.forEach(u => roleCount[u.role] = (roleCount[u.role]||0)+1);
+
+  document.getElementById('summary-bar').innerHTML = `
+    <div class="sum-card"><div class="sum-val">${units.length}</div><div class="sum-lbl">Totaal units</div></div>
+    <div class="sum-card"><div class="sum-val">${totalPts}</div><div class="sum-lbl">Totaal punten</div></div>
+    <div class="sum-card"><div class="sum-val">${totalOC}</div><div class="sum-lbl">OC totaal</div></div>
+    <div class="sum-card"><div class="sum-val">${roleCount['HQ']||0}</div><div class="sum-lbl">HQ</div></div>
+    <div class="sum-card"><div class="sum-val">${roleCount['Troops']||0}</div><div class="sum-lbl">Troops</div></div>
+    <div class="sum-card"><div class="sum-val">${(roleCount['Elite']||0)+(roleCount['Fast Attack']||0)+(roleCount['Heavy Support']||0)}</div><div class="sum-lbl">Andere</div></div>
+  `;
+}
+
+function openModal(u) {
+  editId = u ? u.id : null;
+  pendingImg = u?.img || '';
+  document.getElementById('modal-title').textContent = u ? 'Unit bewerken' : 'Nieuwe unit toevoegen';
+  document.getElementById('f-name').value = u?.name || '';
+  document.getElementById('f-role').value = u?.role || 'Troops';
+  document.getElementById('f-move').value = u?.move || '';
+  document.getElementById('f-t').value = u?.t || '';
+  document.getElementById('f-save').value = u?.save || '';
+  document.getElementById('f-w').value = u?.w || '';
+  document.getElementById('f-ld').value = u?.ld || '';
+  document.getElementById('f-oc').value = u?.oc || '';
+  document.getElementById('f-weapons').value = u?.weapons?.join(', ') || '';
+  document.getElementById('f-pts').value = u?.pts || '';
+  document.getElementById('f-abilities').value = u?.abilities?.join(', ') || '';
+  document.getElementById('f-keywords').value = u?.keywords?.join(', ') || '';
+  const prev = document.getElementById('img-preview');
+  if (u?.img) { prev.src = u.img; prev.style.display = 'block'; }
+  else { prev.src = ''; prev.style.display = 'none'; }
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  pendingImg = ''; editId = null;
+  document.getElementById('img-preview').style.display = 'none';
+  document.getElementById('img-preview').src = '';
+}
+
+function saveUnit() {
+  const name = document.getElementById('f-name').value.trim();
+  if (!name) { alert('Geef de unit een naam.'); return; }
+  const data = {
+    id: editId || nextId++,
+    name,
+    role: document.getElementById('f-role').value,
+    pts: parseInt(document.getElementById('f-pts').value) || 0,
+    move: document.getElementById('f-move').value || '—',
+    t: parseInt(document.getElementById('f-t').value) || 0,
+    save: document.getElementById('f-save').value || '—',
+    w: parseInt(document.getElementById('f-w').value) || 1,
+    ld: parseInt(document.getElementById('f-ld').value) || 7,
+    oc: parseInt(document.getElementById('f-oc').value) || 0,
+    weapons: document.getElementById('f-weapons').value.split(',').map(s=>s.trim()).filter(Boolean),
+    abilities: document.getElementById('f-abilities').value.split(',').map(s=>s.trim()).filter(Boolean),
+    keywords: document.getElementById('f-keywords').value.split(',').map(s=>s.trim()).filter(Boolean),
+    img: pendingImg
+  };
+  if (editId) { const i = units.findIndex(u=>u.id===editId); if(i>-1) units[i]=data; }
+  else units.push(data);
+  closeModal(); render();
+}
+
+function deleteUnit(id) {
+  if (confirm('Unit verwijderen?')) { units = units.filter(u=>u.id!==id); render(); }
+}
+function editUnit(id) { const u = units.find(u=>u.id===id); if(u) openModal(u); }
+
+function previewImg(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  if (file.size > 5*1024*1024) { alert('Afbeelding mag max 5MB zijn.'); return; }
+  const reader = new FileReader();
+  reader.onload = ev => {
+    pendingImg = ev.target.result;
+    const prev = document.getElementById('img-preview');
+    prev.src = pendingImg;
+    prev.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+document.getElementById('modal-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+render();
+</script>
+</body>
+</html>
