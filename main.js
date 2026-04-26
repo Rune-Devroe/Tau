@@ -88,7 +88,7 @@ function parseWeaponProfile(profile) {
     a:     getCharVal(profile, 'A')     || '—',
     bs:    getCharVal(profile, 'BS')    || '—',
     ws:    getCharVal(profile, 'WS')    || '',
-    s:     getCharVal(profile, 'S')     || '—',
+    s:     getCharVal(profile, 'SV')     || '—',
     ap:    getCharVal(profile, 'AP')    || '—',
     d:     getCharVal(profile, 'D')     || '—',
     keywords: getCharVal(profile, 'Keywords') || '',
@@ -128,7 +128,7 @@ function parseBattleScribe(json) {
       }
       collectProfiles(sel);
 
-      let move = '', t = 0, save = '', w = 1, ld = 7, oc = 0;
+      let move = '', t = 0, sv = '', w = 1, ld = 7, oc = 0;
 
       for (const p of allProfiles) {
         const tn = (p.typeName || '').toLowerCase();
@@ -143,8 +143,8 @@ function parseBattleScribe(json) {
           if (tv) t = parseInt(tv) || 0;
 
           // FIX: Sv can be labelled 'Sv' or 'Save'
-          const sv = getCharVal(p, 'Sv') || getCharVal(p, 'Save');
-          if (sv && !save) save = sv;
+          const sv = getCharVal(p, 'SV') || getCharVal(p, 'Save');
+          if (sv && !sv) sv = sv;
 
           const wv = getCharVal(p, 'W');
           if (wv) w = parseInt(wv) || 1;
@@ -295,9 +295,9 @@ function render() {
         </div>
 
         <div class="stats-row">
-          <div class="stat-box"><div class="stat-val">${u.move||'—'}</div><div class="stat-lbl">Move</div></div>
+          <div class="stat-box"><div class="stat-val">${u.move||'—'}</div><div class="stat-lbl">M</div></div>
           <div class="stat-box"><div class="stat-val">${u.t||'—'}</div><div class="stat-lbl">T</div></div>
-          <div class="stat-box"><div class="stat-val">${u.save||'—'}</div><div class="stat-lbl">Save</div></div>
+          <div class="stat-box"><div class="stat-val">${u.SV||'—'}</div><div class="stat-lbl">SV</div></div>
           <div class="stat-box"><div class="stat-val">${u.w||'—'}</div><div class="stat-lbl">W</div></div>
           <div class="stat-box"><div class="stat-val">${u.ld||'—'}</div><div class="stat-lbl">LD</div></div>
           <div class="stat-box"><div class="stat-val">${u.oc||0}</div><div class="stat-lbl">OC</div></div>
@@ -353,7 +353,7 @@ function openModal(u) {
   document.getElementById('f-role').value = u?.role || 'Troops';
   document.getElementById('f-move').value = u?.move || '';
   document.getElementById('f-t').value = u?.t || '';
-  document.getElementById('f-save').value = u?.save || '';
+  document.getElementById('f-save').value = u?.sv || '';
   document.getElementById('f-w').value = u?.w || '';
   document.getElementById('f-ld').value = u?.ld || '';
   document.getElementById('f-oc').value = u?.oc || '';
@@ -379,7 +379,7 @@ function saveUnit() {
     pts: parseInt(document.getElementById('f-pts').value) || 0,
     move: document.getElementById('f-move').value || '—',
     t: parseInt(document.getElementById('f-t').value) || 0,
-    save: document.getElementById('f-save').value || '—',
+    sv: document.getElementById('f-save').value || '—',
     w: parseInt(document.getElementById('f-w').value) || 1,
     ld: parseInt(document.getElementById('f-ld').value) || 7,
     oc: parseInt(document.getElementById('f-oc').value) || 0,
