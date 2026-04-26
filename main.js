@@ -29,7 +29,6 @@ function saveToStorage() {
 let units = loadFromStorage() || [];
 let nextId = parseInt(localStorage.getItem(STORAGE_ID_KEY) || '10');
 let editId = null;
-let pendingImg = '';
 
 // ── BattleScribe / NewRecruit JSON parser ─────────────────────────────────────
 const CATEGORY_ROLE_MAP = {
@@ -262,7 +261,6 @@ function updateSummary() {
 
 function openModal(u) {
   editId = u ? u.id : null;
-  pendingImg = u?.img || '';
   document.getElementById('modal-title').textContent = u ? 'Unit bewerken' : 'Nieuwe unit toevoegen';
   document.getElementById('f-name').value = u?.name || '';
   document.getElementById('f-role').value = u?.role || 'Troops';
@@ -276,17 +274,11 @@ function openModal(u) {
   document.getElementById('f-pts').value = u?.pts || '';
   document.getElementById('f-abilities').value = u?.abilities?.join(', ') || '';
   document.getElementById('f-keywords').value = u?.keywords?.join(', ') || '';
-  const prev = document.getElementById('img-preview');
-  if (u?.img) { prev.src = u.img; prev.style.display = 'block'; }
-  else { prev.src = ''; prev.style.display = 'none'; }
   document.getElementById('modal-overlay').classList.add('open');
 }
 
 function closeModal() {
   document.getElementById('modal-overlay').classList.remove('open');
-  pendingImg = ''; editId = null;
-  document.getElementById('img-preview').style.display = 'none';
-  document.getElementById('img-preview').src = '';
 }
 
 function saveUnit() {
@@ -306,7 +298,6 @@ function saveUnit() {
     weapons: document.getElementById('f-weapons').value.split(',').map(s=>s.trim()).filter(Boolean),
     abilities: document.getElementById('f-abilities').value.split(',').map(s=>s.trim()).filter(Boolean),
     keywords: document.getElementById('f-keywords').value.split(',').map(s=>s.trim()).filter(Boolean),
-    img: pendingImg
   };
   if (editId) { const i = units.findIndex(u=>u.id===editId); if(i>-1) units[i]=data; }
   else units.push(data);
@@ -318,20 +309,6 @@ function deleteUnit(id) {
   if (confirm('Unit verwijderen?')) { units = units.filter(u=>u.id!==id); saveToStorage(); render(); }
 }
 function editUnit(id) { const u = units.find(u=>u.id===id); if(u) openModal(u); }
-
-function previewImg(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  if (file.size > 5*1024*1024) { alert('Afbeelding mag max 5MB zijn.'); return; }
-  const reader = new FileReader();
-  reader.onload = ev => {
-    pendingImg = ev.target.result;
-    const prev = document.getElementById('img-preview');
-    prev.src = pendingImg;
-    prev.style.display = 'block';
-  };
-  reader.readAsDataURL(file);
-}
 
 document.getElementById('modal-overlay').addEventListener('click', function(e) {
   if (e.target === this) closeModal();
